@@ -37,7 +37,8 @@ router.beforeEach((to, from, next) => {
             sessionStorage.setItem('requested-url', to.fullPath);
             let loc = window.location;
             const port = loc.port ? ':' + loc.port : '';
-            loc.href = `//${loc.hostname}${port}/oauth2/authorization/okta`;
+            //loc.href = `//${loc.hostname}${port}/oauth2/authorization/okta`;
+            loc.href = `http://localhost:8098/oauth2/authorization/okta`;
         } else {
             next();
         }

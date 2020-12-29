@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const AXIOS = axios.create({
-  baseURL: `/api`,
+  baseURL: `http://localhost:8098/api`,
   timeout: 1000
 });
 
@@ -11,14 +11,10 @@ export default {
         return AXIOS.get(`/hello`);
     },
     getUser() {
-      return AXIOS.get('/account')
+      return AXIOS.get('/account', {withCredentials: true})
     },
     getSecured(user, password) {
-        return AXIOS.get(`/secured/`,{
-            auth: {
-                username: user,
-                password: password
-            }});
+        return AXIOS.get(`/secured/`,{withCredentials: true});
     }
 }
 

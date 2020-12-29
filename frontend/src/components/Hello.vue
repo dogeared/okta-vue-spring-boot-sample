@@ -31,6 +31,9 @@ export default {
   name: 'hello',
   props: { hellomsg: { type: String, required: true } },
   mounted() {
+    if (!window.location.href.startsWith('http://localhost:8080')) {
+      window.location.href= 'http://localhost:8080';
+    }
     store.dispatch("getUser")
       .then(() => {
         if (sessionStorage.getItem('requested-url')) {
