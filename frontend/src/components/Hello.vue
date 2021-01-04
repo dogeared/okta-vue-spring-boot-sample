@@ -1,24 +1,22 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="hello">
     <img src="./../assets/spring-boot-vuejs-logo.png">
     <h1>{{ hellomsg }}</h1>
     <h2>See the sources here: </h2>
     <ul>
-      <li><a href="https://github.com/jonashackt/spring-boot-vuejs" target="_blank">github.com/jonashackt/spring-boot-vuejs</a></li>
+      <li>
+        <a href="github.com/okta-samples/okta-vue-spring-boot-sample" target="_blank">
+          github.com/okta-samples/okta-vue-spring-boot-sample</a>
+      </li>
     </ul>
-    <h3>This site contains more stuff :)</h3>
-    <ul>
-        <li>HowTo call REST-Services:</li>
-        <li><router-link to="/callservice">/callservice</router-link></li>
-        <li>HowTo to play around with Bootstrap UI components:</li>
-        <li><router-link to="/bootstrap">/bootstrap</router-link></li>
-        <li>HowTo to interact with the Spring Boot database backend:</li>
-        <li><router-link to="/user">/user</router-link></li>
-        <li>Login to the secured part of the application</li>
-        <li><router-link to="/login">/login</router-link></li>
-        <li>A secured part of this application:</li>
-        <li><router-link to="/protected">/protected</router-link></li>
-    </ul>
+    <div v-if="$store.getters.getUser">
+      <h3>User Info for {{ $store.getters.getUser.given_name }}:</h3>
+      <div style="text-align: center;">
+      <textarea>
+        {{ JSON.stringify($store.getters.getUser, undefined, 4) }}
+      </textarea>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -31,9 +29,6 @@ export default {
   name: 'hello',
   props: { hellomsg: { type: String, required: true } },
   mounted() {
-    if (!window.location.href.startsWith('http://localhost:8080')) {
-      window.location.href= 'http://localhost:8080';
-    }
     store.dispatch("getUser")
       .then(() => {
         if (sessionStorage.getItem('requested-url')) {
@@ -65,5 +60,17 @@ li {
 
 a {
   color: #42b983;
+}
+
+textarea {
+  width: 50%;
+  min-height: 30rem;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  border: none;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

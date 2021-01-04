@@ -28,14 +28,12 @@ export default new Vuex.Store({
                         console.log("Response: '" + response.data + "' with Statuscode " + response.status);
                         if(response.status == 200) {
                             console.log("Login successful");
-                            // place the loginSuccess state into our vuex store
                             commit('login_success', {user: response.data});
                         }
                         resolve(response)
                     })
                     .catch(error => {
                         console.log("Error: " + error);
-                        // place the loginError state into our vuex store
                         commit('login_error', {});
                         reject("Invalid credentials!")
                     })

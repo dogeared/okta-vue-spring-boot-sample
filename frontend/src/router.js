@@ -2,8 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import Service from '@/components/Service'
-import Bootstrap from '@/components/Bootstrap'
 import Protected from '@/components/Protected'
+import appConfig from '@/.app.config'
 
 import store from './store'
 
@@ -14,7 +14,6 @@ const router = new Router({
     routes: [
         { path: '/', component: Hello },
         { path: '/callservice', component: Service },
-        { path: '/bootstrap', component: Bootstrap },
         {
             path: '/protected',
             component: Protected,
@@ -35,10 +34,7 @@ router.beforeEach((to, from, next) => {
         // if not, redirect to login page.
         if (!store.getters.isLoggedIn) {
             sessionStorage.setItem('requested-url', to.fullPath);
-            let loc = window.location;
-            const port = loc.port ? ':' + loc.port : '';
-            //loc.href = `//${loc.hostname}${port}/oauth2/authorization/okta`;
-            loc.href = `http://localhost:8098/oauth2/authorization/okta`;
+            window.location.href = appConfig.backendUrl + '/oauth2/authorization/okta';
         } else {
             next();
         }

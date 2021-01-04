@@ -28,6 +28,7 @@
 	
 	<modules>
         <module>frontend</module>
+		<module>frontend-for-standalone</module>
         <module>backend</module>
     </modules>
 
