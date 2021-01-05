@@ -1,67 +1,76 @@
 package com.example.controller;
 
-import com.example.SpringBootVuejsApplication;
-import io.restassured.RestAssured;
-import org.apache.http.HttpStatus;
+import com.example.utils.OAuthUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
-import static org.hamcrest.Matchers.equalTo;
+import static com.example.controller.BackendController.ACCOUNT_ENDPOINT;
+import static com.example.controller.BackendController.BASE_ENDPOINT;
+import static com.example.controller.BackendController.HELLO_ENDPOINT;
+import static com.example.controller.BackendController.HELLO_TEXT;
+import static com.example.controller.BackendController.SECURED_ENDPOINT;
+import static com.example.controller.BackendController.SECURED_TEXT;
+import static com.example.utils.OAuthUtils.getOauthAuthenticationFor;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-		classes = SpringBootVuejsApplication.class,
-		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@WebMvcTest(BackendController.class)
 public class BackendControllerTest {
 
-	@LocalServerPort
-	private int port;
+	@Autowired
+	private MockMvc mvc;
+
+	private OidcUser principal;
+
+	private static final String NAME = "Micah Silverman";
+	private static final String EMAIL = "micah@afitnerd.com";
+	private static final String SUB = "1234567890";
+	private static final String AUTHORITY = "user";
 
 	@Before
-    public void init() {
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-    }
-
-	@Test
-	public void saysHello() {
-		when()
-			.get("/api/hello")
-		.then()
-			.statusCode(HttpStatus.SC_OK)
-			.assertThat()
-				.body(is(equalTo(BackendController.HELLO_TEXT)));
+	public void setUpUser() {
+		principal = OAuthUtils.createOidcUser(NAME, EMAIL, SUB, AUTHORITY);
 	}
 
 	@Test
-	public void secured_api_should_react_with_unauthorized_per_default() {
-
-		given()
-		.when()
-			.get("/api/secured")
-		.then()
-			.statusCode(HttpStatus.SC_UNAUTHORIZED);
+	public void hello_api_success() throws Exception {
+		mvc.perform(get(BASE_ENDPOINT + HELLO_ENDPOINT))
+			.andExpect(status().isOk())
+			.andExpect(content().string(HELLO_TEXT));
 	}
 
 	@Test
-	public void secured_api_should_give_http_200_when_authorized() {
-
-		given()
-			.auth().basic("sina", "miller")
-		.when()
-			.get("/api/secured")
-		.then()
-			.statusCode(HttpStatus.SC_OK)
-			.assertThat()
-				.body(is(equalTo(BackendController.SECURED_TEXT)));
+	public void secured_api_unauthenticated_fail() throws Exception {
+		mvc.perform(get(BASE_ENDPOINT + SECURED_ENDPOINT))
+			.andExpect(status().isFound());
 	}
 
+	@Test
+	public void secured_api_authenticated_success() throws Exception {
+		mvc.perform(get(BASE_ENDPOINT + SECURED_ENDPOINT)
+			.with(authentication(getOauthAuthenticationFor(principal))))
+			.andExpect(status().isOk())
+			.andExpect(content().string(SECURED_TEXT));
+	}
+
+	@Test
+	public void account_api_success() throws Exception {
+		mvc.perform(get(BASE_ENDPOINT + ACCOUNT_ENDPOINT)
+			.with(authentication(getOauthAuthenticationFor(principal))))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.email", is(EMAIL)))
+			.andExpect(jsonPath("$.name", is(NAME)))
+			.andExpect(jsonPath("$.sub", is(SUB)));
+	}
 }

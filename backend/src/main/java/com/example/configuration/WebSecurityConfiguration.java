@@ -28,9 +28,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 corsPaths.forEach(path -> source.registerCorsConfiguration(path, corsConfiguration));
                 corsConfigurer.configurationSource(source);
             })
-            .authorizeRequests()
-                .antMatchers("/api/hello").permitAll()
-                .antMatchers("/api/**").authenticated()
+                .oauth2Client()
+            .and()
+                .oauth2Login()
+            .and()
+                .authorizeRequests()
+                .antMatchers("/api/hello", "/").permitAll()
+                .anyRequest().authenticated()
             .and()
                 .csrf().disable(); // disable cross site request forgery, as we don't use cookies - otherwise ALL PUT, POST, DELETE will get HTTP 403!
     }
