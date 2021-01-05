@@ -1,5 +1,6 @@
 package com.example.configuration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -11,9 +12,14 @@ import java.util.List;
 @Configuration
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private List<String> allowedOrigins = List.of("http://localhost:8080");
-    private List<String> allowedMethods = List.of("GET", "POST", "PUT", "DELETE");
-    private List<String> corsPaths = List.of("/api/**");
+    @Value("#{ @environment['security.allowed-origins'] }")
+    private List<String> allowedOrigins;
+
+    @Value("#{ @environment['security.allowed-methods'] }")
+    private List<String> allowedMethods;
+
+    @Value("#{ @environment['security.cors-paths'] }")
+    private List<String> corsPaths;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
