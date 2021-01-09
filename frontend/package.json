@@ -1,8 +1,8 @@
 {
   "name": "frontend",
   "version": "4.0.0",
-  "description": "A Vue.js & Spring Boot example project",
-  "author": "Jonas Hecht <jonas.hecht@codecentric.de>",
+  "description": "A Vue.js & Spring Boot & Okta example project",
+  "author": "Micah Silverman <micah@afitnerd.com>",
   "private": true,
   "scripts": {
     "clean": "rm -rf node_modules target",
@@ -10,7 +10,8 @@
     "test:unit": "vue-cli-service test:unit --coverage",
     "test:e2e": "vue-cli-service test:e2e",
     "test": "vue-cli-service test:unit && vue-cli-service test:e2e",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "build-development": "vue-cli-service build --mode development"
   },
   "dependencies": {
     "axios": "0.21.1",

@@ -5,6 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @Controller
 public class VueForwardController {
 
@@ -17,4 +22,16 @@ public class VueForwardController {
         LOG.info("URL entered directly into the Browser, so we need to redirect...");
         return "forward:/";
     }
+
+//    @GetMapping("/")
+//    public void redir(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        LOG.info("URL entered directly into the Browser, so we need to redirect...");
+//
+//        Cookie c = request.getCookies()[0];
+//        c.setSecure(true);
+//        c.setDomain("ngrok.io");
+//        response.addCookie(c);
+//        //return "forward:/";
+//        response.sendRedirect("https://micah-local.ngrok.io");
+//    }
 }
